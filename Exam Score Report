@@ -1,0 +1,72 @@
+#include <stdio.h>
+
+void fgetAnswers(char[], int, FILE*);
+
+void main()
+{
+	FILE *file = fopen("examdat.txt", "r");
+	int i, q;
+	char answers[25], extraSpace;
+
+	fscanf(file, "%d", &q);
+	fscanf(file, "%c", &extraSpace);
+//creates array of answers
+	for (i=0; i<q; i++){
+		fscanf(file, "%c", &answers[i]);
+	}
+
+	fgetAnswers(answers, q, file);
+	fclose(file);
+}
+
+void fgetAnswers(char answers[], int q, FILE *file)
+{
+	FILE *outp = fopen("report.txt", "w");
+	int missed[q], i, id, correct;
+	char answer;
+
+//creates list of missed per question (k) initialized to zero for each question
+	for (i=0; i<q; i++)  {
+		missed[i] = 0;
+	}
+
+//setup output file report.txt
+	fprintf(outp, "Exam Report\n");
+	fprintf(outp, "\nQuestion:   ");
+	for(i=0; i<q; i++){
+		fprintf(outp, "%d", i);
+	}
+	fprintf(outp, "\nAnswer:     ");
+	for(i=0; i<q; i++){
+		fprintf(outp, "%c", answers[i]);
+	}
+	fprintf(outp, "\n\nID    Score(%%)\n");
+
+	while(fscanf(file, "%d", &id) != EOF){
+		correct = 0;
+		fprintf(outp, "%d ", id);
+		fscanf(file, "%c     ", &answer);
+		for (i=0; i<q; i++){
+			fscanf(file, "%c", &answer);
+
+			if(answer==answers[i]){
+				correct ++;
+			}else{
+				missed[i]++;
+			}
+		}
+		fprintf(outp, "%d\n", (correct*100)/q);
+	}
+//displays the Question numbers
+	fprintf(outp, "\nQuestion   ");
+	for(i=0; i<q; i++){
+		fprintf(outp, "%d ", i);
+	}
+//displays what questions were missed by how many ID's
+	fprintf(outp, "\nMissed by   ");
+	for(i=0; i<q; i++){
+		fprintf(outp, "%d ", missed[i]);
+	}
+	fclose(outp);
+
+}
