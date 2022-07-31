@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+
+typedef struct{
+	int xx;
+	int yy;
+	int zz;
+	int mm;
+	char nickname[10];
+	}address_t;
+
+void scan_address(address_t arr[]);
+void print_address(address_t a, address_t b);
+int local_address(address_t a, address_t b);
+
+
+void scan_address(address_t arr[]){
+	FILE *file = fopen("address.txt", "r");
+	for(int i = 0; i<100; i++){
+		fscanf(file, "%d.%d.%d.%d %s\n", &arr[i].xx, &arr[i].yy, &arr[i].zz, &arr[i].mm, arr[i].nickname);
+		if(arr[i].xx==0 && arr[i].yy==0 && arr[i].zz==0 && arr[i].mm==0 && arr[i].nickname=="none")
+			break;
+	}
+	fclose(file);
+}
+void print_address(address_t a, address_t b){
+	printf("Machines %s and %s are on the same local network.", a.nickname, b.nickname);
+}
+int local_address(address_t a, address_t b){
+	return a.xx==b.xx && a.yy==b.yy;
+}
+int main(){
+	int i,j,k=0;
+	address_t networks[100];
+	scan_address(networks);
+	while(networks[k].nickname != "none")
+		k++;
+		for(i=0;i<=k;i++){
+			printf("%d.%d.%d.%d\t%s\n", networks[i].xx,networks[i].yy,networks[i].zz,networks[i].mm,networks[i].nickname);
+			for(j=i+1;j<=k;j++)
+				if(local_address(networks[i],networks[j])==1)
+					print_address(networks[i], networks[j]);
+	}
+	return 0;
+}
